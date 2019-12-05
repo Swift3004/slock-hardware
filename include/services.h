@@ -1,6 +1,7 @@
 #ifndef SERVICES_H
 #define SERVICES_H
 
+#include <Arduino.h>
 #include <BLEServer.h>
 
 class Services

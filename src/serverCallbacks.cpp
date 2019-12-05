@@ -1,7 +1,5 @@
 #include "serverCallbacks.h"
 
-#include <Arduino.h>
-
 ServerCallbacks::ServerCallbacks()
 {
   connected = 0;

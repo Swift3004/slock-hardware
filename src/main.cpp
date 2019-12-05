@@ -7,8 +7,9 @@ BluetoothServer* server = NULL;
 void setup() {
   Serial.begin(115200);
   server = new BluetoothServer();
+  Serial.println("Starting BLE Server!");
   server->start();
-  Serial.println("Test");
+  Serial.println("Starting AUTH Service!");
   server->manageService(AUTH, START);
 }
 

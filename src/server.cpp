@@ -1,7 +1,4 @@
 #include "server.h"
-#include "serviceAuth.h"
-
-#include <Arduino.h>
 
 BluetoothServer::BluetoothServer()
 {
