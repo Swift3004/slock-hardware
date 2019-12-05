@@ -7,7 +7,8 @@ std::string Services::getUUID() {
 void ServiceAuth::setup() {
   pCharAuth1 = pService->createCharacteristic(
     CHARACTERISTIC_UUID_AUTH_1,
-    BLECharacteristic::PROPERTY_WRITE
+    BLECharacteristic::PROPERTY_WRITE |
+    BLECharacteristic::PROPERTY_READ
   );
   // pCharAuth1->setCallbacks(new ServiceAuthCallbacks());
   pCharAuth1->addDescriptor(new BLE2902());

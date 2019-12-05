@@ -21,15 +21,17 @@ class BluetoothServer
 {
 private:
   BLEServer* pServer;
+  BLEAdvertising* pAdvertising;
   ServiceAuth *pServiceAuth; 
   void setup();
   void setupService();
-  void manageService(SERVICE service, ACTION action);
+  
 
 public:
   BluetoothServer();
   ~BluetoothServer();
   void start();
+  void manageService(SERVICE service, ACTION action);
 };
 
 #endif

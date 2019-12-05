@@ -1,12 +1,15 @@
-#include "main.h"
+#include "server.h"
 
 #include <Arduino.h>
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
+
+BluetoothServer* server = NULL;
 
 void setup() {
-
+  Serial.begin(115200);
+  server = new BluetoothServer();
+  server->start();
+  Serial.println("Test");
+  server->manageService(AUTH, START);
 }
 
 void loop() {

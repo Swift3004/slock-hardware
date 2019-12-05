@@ -1,5 +1,7 @@
 #include "serverCallbacks.h"
 
+#include <Arduino.h>
+
 ServerCallbacks::ServerCallbacks()
 {
   connected = 0;
@@ -12,6 +14,7 @@ ServerCallbacks::~ServerCallbacks()
 void ServerCallbacks::onConnect(BLEServer *server)
 {
   connected++;
+  Serial.println(connected);
   BLEDevice::startAdvertising();
 }
 
