@@ -13,9 +13,10 @@ void setup()
   Serial.println("Starting BLE Server!");
   server->start();
   Serial.println("Starting AUTH Service!");
-  
+  server->checkState(registered);
 }
 
 void loop()
 {
+ 
 }

@@ -36,6 +36,7 @@ public:
   ~BluetoothServer();
   void start();
   void manageService(SERVICE service, ACTION action);
+  void checkState(bool registered);
 };
 
 #endif
