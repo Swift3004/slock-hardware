@@ -6,11 +6,14 @@
 
 class Services
 {
+protected:
+  BLEService *pService;
 private:
 public:
-  BLEService *pService;
   virtual void init(BLEServer *pServer);
-  std::string getUUID();
-  virtual void setup() = 0;
+  virtual std::string getUUID() = 0;
+  virtual void setupService() = 0;
+  BLEService* getService() {return pService;}
+  void setService(BLEService* service) {pService = service;}
 };
 #endif

@@ -25,7 +25,7 @@ void BluetoothServer::setup()
 void BluetoothServer::setupService()
 {
   pServiceAuth->init(pServer);
-  pServiceAuth->setup();
+  pServiceAuth->setupService();
   
   pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(pServiceAuth->getUUID());
@@ -42,15 +42,17 @@ void BluetoothServer::manageService(SERVICE service, ACTION action)
   switch (service)
   {
   case AUTH:
-    serviceBLE = pServiceAuth->pService;
+    serviceBLE = pServiceAuth->getService();
     break;
+  case REGISTER:
+    serviceBLE = pServiceRegister->getService();
   default:
     break;
   }
 
   if (action == START)
   {
-    serviceBLE->start();
+  serviceBLE->start();
   }
   else if (action == STOP)
   {

@@ -3,6 +3,7 @@
 
 #include "serverCallbacks.h"
 #include "serviceAuth.h"
+#include "serviceRegister.h"
 #include "services.h"
 
 #include <Arduino.h>
@@ -10,7 +11,8 @@
 #include <BLEServer.h>
 
 enum SERVICE {
-  AUTH
+  AUTH,
+  REGISTER
 };
 
 enum ACTION {
@@ -24,6 +26,7 @@ private:
   BLEServer* pServer;
   BLEAdvertising* pAdvertising;
   ServiceAuth *pServiceAuth; 
+  ServiceRegister *pServiceRegister; 
   void setup();
   void setupService();
   
