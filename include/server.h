@@ -5,6 +5,7 @@
 #include "serviceAuth.h"
 #include "serviceRegister.h"
 #include "services.h"
+#include "fileSystem.h"
 
 #include <Arduino.h>
 #include <BLEDevice.h>
@@ -30,6 +31,7 @@ private:
   ServiceCallbacks *pCallbacks;
   ServiceAuth *pServiceAuth;
   ServiceRegister *pServiceRegister;
+  FileSystem *pFileSystem;
   void setup();
   void setupService();
 

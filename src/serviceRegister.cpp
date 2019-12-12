@@ -10,5 +10,10 @@ void ServiceRegister::setupService(ServiceCallbacks* pCallbacks) {
     BLECharacteristic::PROPERTY_WRITE
   );
   pCharRegister1->setCallbacks(pCallbacks);
-  pCharRegister1->addDescriptor(new BLE2902());
+
+  pCharRegister2 = getService()->createCharacteristic(
+    CHARACTERISTIC_UUID_REGISTER_2,
+    BLECharacteristic::PROPERTY_WRITE
+  );
+  pCharRegister2->setCallbacks(pCallbacks);
 }

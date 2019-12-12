@@ -8,6 +8,7 @@ BluetoothServer::BluetoothServer()
   pCallbacks = new ServiceCallbacks();
   pServiceAuth = new ServiceAuth();
   pServiceRegister = new ServiceRegister();
+  pFileSystem = new FileSystem();
 }
 
 BluetoothServer::~BluetoothServer()
@@ -84,6 +85,14 @@ void BluetoothServer::checkState(bool registered)
 
 void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
 {
+
+  if  (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_REGISTER_1)
+  {
+  
+  }else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_REGISTER_1)
+  {
+
+  }
   std::string rxValue = pCharacteristic->getValue();
 
   if (rxValue.length() > 0)
