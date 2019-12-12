@@ -1,3 +1,6 @@
+#ifndef SERVERCALLBACKS_H
+#define SERVERCALLBACKS_H
+
 #include <Arduino.h>
 #include <BLEDevice.h>
 #include <BLEServer.h>
@@ -12,3 +15,5 @@ public:
   void onConnect(BLEServer *server);
   void onDisconnect(BLEServer *server);
 };
+
+#endif

@@ -12,7 +12,7 @@
 class ServiceAuth: public Services {
   public:
     BLECharacteristic* pCharAuth1;
-    virtual void setupService();
+    virtual void setupService(ServiceCallbacks* pCallbacks);
     virtual std::string getUUID();
 };
 #endif

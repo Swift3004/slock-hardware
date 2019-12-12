@@ -10,12 +10,14 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 
-enum SERVICE {
+enum SERVICE
+{
   AUTH,
   REGISTER
 };
 
-enum ACTION {
+enum ACTION
+{
   START,
   STOP
 };
@@ -23,13 +25,13 @@ enum ACTION {
 class BluetoothServer
 {
 private:
-  BLEServer* pServer;
-  BLEAdvertising* pAdvertising;
-  ServiceAuth *pServiceAuth; 
-  ServiceRegister *pServiceRegister; 
+  BLEServer *pServer;
+  BLEAdvertising *pAdvertising;
+  ServiceCallbacks *pCallbacks;
+  ServiceAuth *pServiceAuth;
+  ServiceRegister *pServiceRegister;
   void setup();
   void setupService();
-  
 
 public:
   BluetoothServer();

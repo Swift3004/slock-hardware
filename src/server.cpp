@@ -1,9 +1,11 @@
 #include "server.h"
+#include "serverCallbacks.h"
 
 BluetoothServer::BluetoothServer()
 {
   BLEDevice::init("SLOCK-ALPHA-v1");
   pServer = BLEDevice::createServer();
+  pCallbacks = new ServiceCallbacks();
   pServiceAuth = new ServiceAuth();
   pServiceRegister = new ServiceRegister();
 }
@@ -26,10 +28,10 @@ void BluetoothServer::setup()
 void BluetoothServer::setupService()
 {
   pServiceAuth->init(pServer);
-  pServiceAuth->setupService();
-  
+  pServiceAuth->setupService(pCallbacks);
+
   pServiceRegister->init(pServer);
-  pServiceRegister->setupService();
+  pServiceRegister->setupService(pCallbacks);
 
   pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(pServiceAuth->getUUID());
@@ -58,7 +60,7 @@ void BluetoothServer::manageService(SERVICE service, ACTION action)
 
   if (action == START)
   {
-  serviceBLE->start();
+    serviceBLE->start();
   }
   else if (action == STOP)
   {
@@ -66,7 +68,8 @@ void BluetoothServer::manageService(SERVICE service, ACTION action)
   }
 }
 
-void BluetoothServer::checkState(bool registered) {
+void BluetoothServer::checkState(bool registered)
+{
   if (registered == false)
   {
     manageService(REGISTER, START);
@@ -77,4 +80,24 @@ void BluetoothServer::checkState(bool registered) {
     manageService(REGISTER, STOP);
     manageService(AUTH, START);
   }
+}
+
+void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
+{
+  std::string rxValue = pCharacteristic->getValue();
+
+  if (rxValue.length() > 0)
+  {
+    Serial.println("*********");
+    Serial.print("Received Value: ");
+    for (int i = 0; i < rxValue.length(); i++)
+      Serial.print(rxValue[i]);
+
+    Serial.println();
+    Serial.println("*********");
+  }
+}
+
+void ServiceCallbacks::onRead(BLECharacteristic *pCharacteristic)
+{
 }

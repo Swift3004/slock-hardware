@@ -19,4 +19,5 @@ void ServerCallbacks::onConnect(BLEServer *server)
 void ServerCallbacks::onDisconnect(BLEServer *server)
 {
   connected--;
+  Serial.println(connected);
 }
