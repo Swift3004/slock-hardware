@@ -33,6 +33,7 @@ std::string FileSystem::readFile(fs::FS &fs, const char *path)
 
   // close the file
   file.close();
+  return value;
 }
 
 void FileSystem::writeFile(fs::FS &fs, const char *path, const char *message)

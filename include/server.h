@@ -36,7 +36,7 @@ private:
   void setupService();
 
 public:
-  BluetoothServer();
+  BluetoothServer(std::string name, FileSystem *filesystem,  bool *shouldCheck);
   ~BluetoothServer();
   void start();
   void manageService(SERVICE service, ACTION action);

@@ -1,18 +1,19 @@
 #include "server.h"
 #include "serverCallbacks.h"
 
-BluetoothServer::BluetoothServer()
+BluetoothServer::BluetoothServer(std::string name, FileSystem *filesystem, bool *shouldCheck)
 {
-  BLEDevice::init("SLOCK-ALPHA-v1");
+  BLEDevice::init(name);
   pServer = BLEDevice::createServer();
-  pCallbacks = new ServiceCallbacks();
+  pFileSystem = filesystem;
+  pCallbacks = new ServiceCallbacks(pFileSystem, shouldCheck);
   pServiceAuth = new ServiceAuth();
   pServiceRegister = new ServiceRegister();
-  pFileSystem = new FileSystem();
 }
 
 BluetoothServer::~BluetoothServer()
 {
+  BLEDevice::deinit();
 }
 
 void BluetoothServer::start()
@@ -83,30 +84,3 @@ void BluetoothServer::checkState(bool registered)
   }
 }
 
-void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
-{
-
-  if  (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_REGISTER_1)
-  {
-  
-  }else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_REGISTER_1)
-  {
-
-  }
-  std::string rxValue = pCharacteristic->getValue();
-
-  if (rxValue.length() > 0)
-  {
-    Serial.println("*********");
-    Serial.print("Received Value: ");
-    for (int i = 0; i < rxValue.length(); i++)
-      Serial.print(rxValue[i]);
-
-    Serial.println();
-    Serial.println("*********");
-  }
-}
-
-void ServiceCallbacks::onRead(BLECharacteristic *pCharacteristic)
-{
-}
