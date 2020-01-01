@@ -37,12 +37,14 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
   }
   else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_AUTH_1)
   {
-    std::string hash = rxValue.substr(0, 64);
-    std::string action = rxValue.substr(65, 1);
-    bool response = authenticate(hash.c_str());
-    if (response) {
-      // Open Lock
-    }
+    //  Serial.println(rxValue.c_str());
+    // std::string hash = rxValue.substr(0, 64);
+    // std::string action = rxValue.substr(65, 1);
+   
+    // bool response = authenticate(hash.c_str());
+    // if (response) {
+    //   // Open Lock
+    // }
   }
 }
 
