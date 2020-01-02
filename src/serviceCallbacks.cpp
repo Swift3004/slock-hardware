@@ -43,6 +43,7 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
    
     bool response = authenticate(hash.c_str());
     if (response) {
+      Serial.println("I see this as an abosulte win");
       // Open Lock
     }
   }
