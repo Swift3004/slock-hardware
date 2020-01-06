@@ -2,6 +2,7 @@
 #define SERVICECALLBACKS_H
 
 #include "fileSystem.h"
+#include "lockstate.h"
 
 #include <Arduino.h>
 #include <BLEDevice.h>
@@ -11,7 +12,7 @@
 #include <string.h>
 
 // Token UUID
-#define CHARACTERISTIC_UUID_AUTH_1 "b2d709fe-de1c-46db-9b13-a39aac60de42"
+#define CHARACTERISTIC_UUID_AUTH_1 "b3d709fe-de1c-46db-9b13-a39aac60de42"
 
 //Name UUID
 #define CHARACTERISTIC_UUID_REGISTER_1 "c3465381-d3fe-4234-bd2b-a642eaedb1fe"
@@ -23,8 +24,9 @@ class ServiceCallbacks : public BLECharacteristicCallbacks
 private:
   FileSystem *pFileSystem;
   bool *pShouldCheck;
+  LOCKSTATE pState;
 public:
-  ServiceCallbacks(FileSystem *fileSystem, bool *shouldCheck);
+  ServiceCallbacks(FileSystem *fileSystem, bool *shouldCheck, LOCKSTATE *state);
   ~ServiceCallbacks();
   void onWrite(BLECharacteristic *pCharacteristic);
   void onRead(BLECharacteristic *pCharacteristic);

@@ -1,6 +1,6 @@
 #include "serviceCallbacks.h"
 
-ServiceCallbacks::ServiceCallbacks(FileSystem *fileSystem, bool *shouldCheck)
+ServiceCallbacks::ServiceCallbacks(FileSystem *fileSystem, bool *shouldCheck, LOCKSTATE *state)
 {
   pFileSystem = fileSystem;
   pShouldCheck = shouldCheck;
@@ -13,6 +13,12 @@ ServiceCallbacks::~ServiceCallbacks()
 void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
 {
   std::string rxValue = pCharacteristic->getValue();
+
+  // Prevent Crash caused by Android!
+  if (rxValue.length() <= 0) {
+    return;
+  }
+
   if (rxValue.length() > 0)
   {
     Serial.println("*********");
@@ -23,7 +29,8 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
     Serial.println();
     Serial.println("*********");
   }
-
+  
+Serial.println(pCharacteristic->getUUID().toString().c_str());
   if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_REGISTER_1)
   {
     pFileSystem->writeFile(SD, "/name.txt", rxValue.c_str());
@@ -37,7 +44,6 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
   }
   else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_AUTH_1)
   {
-    Serial.println(rxValue.c_str());
     std::string hash = rxValue.substr(0, 64);
     std::string action = rxValue.substr(65, 1);
    

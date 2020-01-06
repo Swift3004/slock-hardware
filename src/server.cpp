@@ -1,12 +1,12 @@
 #include "server.h"
 #include "serverCallbacks.h"
 
-BluetoothServer::BluetoothServer(std::string name, FileSystem *filesystem, bool *shouldCheck)
+BluetoothServer::BluetoothServer(std::string name, FileSystem *filesystem, bool *shouldCheck, LOCKSTATE *state)
 {
   BLEDevice::init(name);
   pServer = BLEDevice::createServer();
   pFileSystem = filesystem;
-  pCallbacks = new ServiceCallbacks(pFileSystem, shouldCheck);
+  pCallbacks = new ServiceCallbacks(pFileSystem, shouldCheck, state);
   pServiceAuth = new ServiceAuth();
   pServiceRegister = new ServiceRegister();
 }

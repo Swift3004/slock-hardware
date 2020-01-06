@@ -6,6 +6,7 @@
 #include "serviceRegister.h"
 #include "services.h"
 #include "fileSystem.h"
+#include "lockstate.h"
 
 #include <Arduino.h>
 #include <BLEDevice.h>
@@ -36,7 +37,7 @@ private:
   void setupService();
 
 public:
-  BluetoothServer(std::string name, FileSystem *filesystem,  bool *shouldCheck);
+  BluetoothServer(std::string name, FileSystem *filesystem,  bool *shouldCheck, LOCKSTATE *state);
   ~BluetoothServer();
   void start();
   void manageService(SERVICE service, ACTION action);
