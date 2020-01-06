@@ -40,7 +40,7 @@ Serial.println(pCharacteristic->getUUID().toString().c_str());
   {
     pFileSystem->writeFile(SD, "/SECRET.txt", rxValue.c_str());
     pFileSystem->writeFile(SD, "/SECRET_2.txt", 0);
-    *pShouldCheck = true;
+    *pShouldCheck = true; 
   }
   else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_AUTH_1)
   {
