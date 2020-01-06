@@ -58,7 +58,7 @@ bool ServiceCallbacks::authenticate(const char *hash)
   bool response = false;
 
   std::string secret = pFileSystem->readFile(SD, "/SECRET.txt");
-  std::string secret_2 = pFileSystem->readFile(SD, "SECRET_2.txt");
+  std::string secret_2 = pFileSystem->readFile(SD, "/SECRET_2.txt");
   const char* noncalculatedHash = (secret + ";" + secret_2).c_str();
   std::string calculatedHash = "";
 
@@ -90,6 +90,7 @@ bool ServiceCallbacks::authenticate(const char *hash)
 
   if (strcmp(hash, calculatedHash.c_str()) == 0) {
     response = true;
+    //pFileSystem->writeFile(SD, "/SECRET_2.txt", "" + atoi(secret_2.c_str()) + 1);
   }else {
     response = false;
   }

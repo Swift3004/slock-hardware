@@ -2,6 +2,10 @@
 
 #include <Arduino.h>
 
+#define ROTARY_ENCODER_PIN1 21
+#define ROTARY_ENCODER_PIN2 32
+#define SERVO_PIN 13 
+
 BluetoothServer *server = NULL;
 
 FileSystem *filesystem;
