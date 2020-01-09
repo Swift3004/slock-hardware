@@ -64,10 +64,17 @@ void restart()
 
   server->checkState(registered);
 }
-
+uint32_t value = 0;
 void TaskLoop(void* parameter) {
   for(;;) {
-    delay(20);
+    //  char buf[100];
+    //     sprintf(buf, "This is a long string to test if that will lead to memory loss %d", value);
+    //     server->pServiceAuth->pCharAuth1->setValue((uint8_t*)buf, strlen(buf));
+    //     server->pServiceAuth->pCharAuth1->notify();
+    //     Serial.print("Freeheap: ");
+    //     Serial.println(ESP.getFreeHeap());
+    //     value++;
+    delay(5000);
   }
 }
 
@@ -80,7 +87,9 @@ void setup()
   encoder.attachHalfQuad(21, 32);
 
   filesystem = new FileSystem();
-
+  filesystem->writeFile(SD, "/name.txt", "");
+  filesystem->writeFile(SD, "/SECRET.txt", "");
+  filesystem->writeFile(SD, "/SECRET_2.txt", "");
   checkRegister();
 
   Serial.print("Registered is: ");
@@ -88,14 +97,14 @@ void setup()
 
   restart();
 
-  xTaskCreatePinnedToCore(
-      TaskLoop, /* Function to implement the task */
-      "Task1",   /* Name of the task */
-      10000,     /* Stack size in words */
-      NULL,      /* Task input parameter */
-      0,         /* Priority of the task */
-      &Task1,    /* Task handle. */
-      0);        /* Core where the task should run */
+  // xTaskCreatePinnedToCore(
+  //     TaskLoop, /* Function to implement the task */
+  //     "Task1",   /* Name of the task */
+  //     10000,     /* Stack size in words */
+  //     NULL,      /* Task input parameter */
+  //     0,         /* Priority of the task */
+  //     &Task1,    /* Task handle. */
+  //     0);        /* Core where the task should run */
 }
 
 void loop()
@@ -112,5 +121,6 @@ void loop()
     *shouldCheck = false;
   }
 
+       
 
 }

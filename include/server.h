@@ -33,6 +33,7 @@ private:
   ServiceAuth *pServiceAuth;
   ServiceRegister *pServiceRegister;
   FileSystem *pFileSystem;
+
   void setup();
   void setupService();
 

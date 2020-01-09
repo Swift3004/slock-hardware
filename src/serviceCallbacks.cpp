@@ -4,16 +4,13 @@ ServiceCallbacks::ServiceCallbacks(FileSystem *fileSystem, bool *shouldCheck, LO
 {
   pFileSystem = fileSystem;
   pShouldCheck = shouldCheck;
-}
-
-ServiceCallbacks::~ServiceCallbacks()
-{
+  pState = state;
 }
 
 void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
 {
   std::string rxValue = pCharacteristic->getValue();
-
+  Serial.println("Received Something I Guess?");
   // Prevent Crash caused by Android!
   if (rxValue.length() <= 0) {
     return;
@@ -39,19 +36,46 @@ Serial.println(pCharacteristic->getUUID().toString().c_str());
   else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_REGISTER_2)
   {
     pFileSystem->writeFile(SD, "/SECRET.txt", rxValue.c_str());
-    pFileSystem->writeFile(SD, "/SECRET_2.txt", 0);
+    pFileSystem->writeFile(SD, "/SECRET_2.txt", "0");
     *pShouldCheck = true; 
   }
   else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_AUTH_1)
   {
-    std::string hash = rxValue.substr(0, 64);
-    std::string action = rxValue.substr(65, 1);
-   
+    if (rxValue.length() < 89) {
+      Serial.println("Don't do that, don't give me hope!");
+      return;
+    }
+
+    std::string hash = rxValue.substr(0, 88);
+    std::string action = rxValue.substr(89, rxValue.length() - 89);
+    int actionInt = 0;
+    std::string notification;
+
+    if (action != "-1" && action != "0" && action != "1") {
+      Serial.println("Don't do that, don't give me hope!");
+      return;
+    }
+
+    actionInt = atoi(action.c_str());
+
     bool response = authenticate(hash.c_str());
     if (response) {
-      Serial.println("I see this as an abosulte win");
-      // Open Lock
+      Serial.println("I see this as an abosulte win!");
+      *pState = static_cast<LOCKSTATE>(actionInt);
+      notification = "200";
+      
+    }else {
+      Serial.println(pFileSystem->readFile(SD, "/SECRET_2.txt").c_str());
+      Serial.println("These are confusing times!");
+      notification = "401;" + pFileSystem->readFile(SD, "/SECRET_2.txt");
     }
+     char buf[100];
+        sprintf(buf, "This is a long string to test if that will lead to memory loss %d", 8);
+        pCharacteristic->setValue((uint8_t*)buf, strlen(buf));
+        pCharacteristic->notify();
+        Serial.print("Freeheap: ");
+        Serial.println(ESP.getFreeHeap());
+  delay(1000);
   }
 }
 

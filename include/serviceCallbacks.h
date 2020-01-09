@@ -24,10 +24,9 @@ class ServiceCallbacks : public BLECharacteristicCallbacks
 private:
   FileSystem *pFileSystem;
   bool *pShouldCheck;
-  LOCKSTATE pState;
+  LOCKSTATE *pState;
 public:
   ServiceCallbacks(FileSystem *fileSystem, bool *shouldCheck, LOCKSTATE *state);
-  ~ServiceCallbacks();
   void onWrite(BLECharacteristic *pCharacteristic);
   void onRead(BLECharacteristic *pCharacteristic);
   bool authenticate(const char* hash);

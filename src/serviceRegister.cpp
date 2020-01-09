@@ -1,7 +1,7 @@
 #include "serviceRegister.h"
 
 std::string ServiceRegister::getUUID() {
-  return "7c3e0e35-996f-4745-a62f-ecb0d6e971b2";
+  return SERVICE_UUID_REGISTER;
 }
 
 void ServiceRegister::setupService(ServiceCallbacks* pCallbacks) {

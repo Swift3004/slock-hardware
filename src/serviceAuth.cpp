@@ -1,15 +1,16 @@
 #include "serviceAuth.h"
 
-std::string ServiceAuth::getUUID() {
-  return "ec01579e-4928-48ee-bed0-e68237efa95d";
+std::string ServiceAuth::getUUID()
+{
+  return SERVICE_UUID_AUTH;
 }
 
-void ServiceAuth::setupService(ServiceCallbacks* pCallbacks) {
+void ServiceAuth::setupService(ServiceCallbacks *pCallbacks)
+{
   pCharAuth1 = getService()->createCharacteristic(
-    CHARACTERISTIC_UUID_AUTH_1,
-    BLECharacteristic::PROPERTY_WRITE
+      CHARACTERISTIC_UUID_AUTH_1,
+      BLECharacteristic::PROPERTY_WRITE |
+      BLECharacteristic::PROPERTY_NOTIFY
   );
   pCharAuth1->setCallbacks(pCallbacks);
-  pCharAuth1->addDescriptor(new BLE2902());
 }
-

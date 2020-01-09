@@ -12,6 +12,7 @@ protected:
   BLEService *pService;
 private:
 public:
+  virtual ~Services() {  }
   virtual void init(BLEServer *pServer);
   virtual std::string getUUID() = 0;
   virtual void setupService(ServiceCallbacks* pCallbacks) = 0;

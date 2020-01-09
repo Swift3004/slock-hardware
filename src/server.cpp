@@ -6,9 +6,9 @@ BluetoothServer::BluetoothServer(std::string name, FileSystem *filesystem, bool 
   BLEDevice::init(name);
   pServer = BLEDevice::createServer();
   pFileSystem = filesystem;
-  pCallbacks = new ServiceCallbacks(pFileSystem, shouldCheck, state);
-  pServiceAuth = new ServiceAuth();
   pServiceRegister = new ServiceRegister();
+  pServiceAuth = new ServiceAuth();
+  pCallbacks = new ServiceCallbacks(pFileSystem, shouldCheck, state);
 }
 
 BluetoothServer::~BluetoothServer()
@@ -29,15 +29,13 @@ void BluetoothServer::setup()
 
 void BluetoothServer::setupService()
 {
-  pServiceAuth->init(pServer);
-  pServiceAuth->setupService(pCallbacks);
 
-  pServiceRegister->init(pServer);
-  pServiceRegister->setupService(pCallbacks);
+  // pServiceAuth->getService()->start();
+  // pServiceRegister->getService()->start();
 
   pAdvertising = BLEDevice::getAdvertising();
-  pAdvertising->addServiceUUID(pServiceAuth->getUUID());
-  pAdvertising->addServiceUUID(pServiceRegister->getUUID());
+  pAdvertising->addServiceUUID(SERVICE_UUID_AUTH);
+  pAdvertising->addServiceUUID(SERVICE_UUID_REGISTER);
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x0); // set value to 0x00 to not advertise this param
 
@@ -51,23 +49,34 @@ void BluetoothServer::manageService(SERVICE service, ACTION action)
   switch (service)
   {
   case AUTH:
+    if (action == START)
+    {
+      pServiceAuth->init(pServer);
+      pServiceAuth->setupService(pCallbacks);
+    }
     serviceBLE = pServiceAuth->getService();
     break;
   case REGISTER:
+    if (action == START)
+    {
+      pServiceRegister->init(pServer);
+      pServiceRegister->setupService(pCallbacks);
+    }
     serviceBLE = pServiceRegister->getService();
     break;
   default:
     break;
   }
 
-  if (action == START)
+  if (action == START && serviceBLE != nullptr)
   {
     serviceBLE->start();
   }
-  else if (action == STOP)
+  else if (action == STOP && serviceBLE != nullptr)
   {
-    serviceBLE->stop();
+    pServer->removeService(serviceBLE);
   }
+  
 }
 
 void BluetoothServer::checkState(bool registered)
@@ -79,8 +88,7 @@ void BluetoothServer::checkState(bool registered)
   }
   else
   {
-    manageService(REGISTER, STOP);
     manageService(AUTH, START);
+    manageService(REGISTER, STOP);
   }
 }
-
