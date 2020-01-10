@@ -20,8 +20,11 @@ bool *shouldCheck = new bool(false);
 LOCKSTATE *state = new LOCKSTATE(IDLE);
 
 ESP32Encoder encoder;
+Servo servo;
 
 TaskHandle_t Task1;
+
+int clickCount = 0;
 
 bool checkRegister()
 {
@@ -65,15 +68,10 @@ void restart()
   server->checkState(registered);
 }
 uint32_t value = 0;
-void TaskLoop(void* parameter) {
-  for(;;) {
-    //  char buf[100];
-    //     sprintf(buf, "This is a long string to test if that will lead to memory loss %d", value);
-    //     server->pServiceAuth->pCharAuth1->setValue((uint8_t*)buf, strlen(buf));
-    //     server->pServiceAuth->pCharAuth1->notify();
-    //     Serial.print("Freeheap: ");
-    //     Serial.println(ESP.getFreeHeap());
-    //     value++;
+void TaskLoop(void *parameter)
+{
+  for (;;)
+  {
     delay(5000);
   }
 }
@@ -87,9 +85,12 @@ void setup()
   encoder.attachHalfQuad(21, 32);
 
   filesystem = new FileSystem();
-  filesystem->writeFile(SD, "/name.txt", "");
-  filesystem->writeFile(SD, "/SECRET.txt", "");
-  filesystem->writeFile(SD, "/SECRET_2.txt", "");
+
+  if (filesystem->readFile(SD, "/position.txt") == "")
+  {
+    filesystem->writeFile(SD, "/position.txt", "0");
+  }
+
   checkRegister();
 
   Serial.print("Registered is: ");
@@ -107,8 +108,56 @@ void setup()
   //     0);        /* Core where the task should run */
 }
 
+void attachServo()
+{
+  if (!servo.attached())
+  {
+    servo.attach(SERVO_PIN);
+  }
+}
+
 void loop()
 {
+  int savedClickCount = atoi(filesystem->readFile(SD, "/position.txt").c_str());
+  if (encoder.getCount() != savedClickCount)
+  {
+    clickCount = encoder.getCount() + savedClickCount;
+  } else {
+    clickCount = encoder.getCount();
+  }
+  switch (*state)
+  {
+  case IDLE:
+    servo.detach();
+    break;
+  case OPEN:
+    attachServo();
+    if (clickCount >= 5)
+    {
+      *state = IDLE;
+    }
+    else
+    {
+      servo.write(1700);
+    }
+
+    break;
+  case CLOSE:
+    attachServo();
+    if (clickCount <= -40)
+    {
+      *state = IDLE;
+    }
+    else
+    {
+      servo.write(1300);
+    }
+    break;
+  default:
+    break;
+  }
+  filesystem->writeFile(SD, "/position", "" + clickCount);
+  delay(20);
   if (*shouldCheck == true)
   {
     Serial.println("ShouldCheck is true");
@@ -120,7 +169,4 @@ void loop()
     }
     *shouldCheck = false;
   }
-
-       
-
 }
