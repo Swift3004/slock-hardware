@@ -10,6 +10,7 @@
 #include <Crypto.h>
 #include <SHA512.h>
 #include <string.h>
+#include <base64.h>
 
 // Token UUID
 #define CHARACTERISTIC_UUID_AUTH_1 "b3d709fe-de1c-46db-9b13-a39aac60de42"

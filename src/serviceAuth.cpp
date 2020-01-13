@@ -13,4 +13,5 @@ void ServiceAuth::setupService(ServiceCallbacks *pCallbacks)
       BLECharacteristic::PROPERTY_NOTIFY
   );
   pCharAuth1->setCallbacks(pCallbacks);
+  pCharAuth1->addDescriptor(new BLE2902());
 }

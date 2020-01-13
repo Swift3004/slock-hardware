@@ -120,8 +120,8 @@ bool ServiceCallbacks::authenticate(const char *hash)
     }
     calculatedHash += buffer;
   }
-
-  if (strcmp(hash, calculatedHash.c_str()) == 0)
+  Serial.println(base64::encode(value, 64));
+  if (strcmp(hash, base64::encode(value, 64).c_str()) == 0)
   {
     response = true;
     //pFileSystem->writeFile(SD, "/SECRET_2.txt", "" + atoi(secret_2.c_str()) + 1);

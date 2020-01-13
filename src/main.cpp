@@ -156,7 +156,7 @@ void loop()
   default:
     break;
   }
-  filesystem->writeFile(SD, "/position", "" + clickCount);
+  filesystem->writeFile(SD, "/position.txt", "" + clickCount);
   delay(20);
   if (*shouldCheck == true)
   {
