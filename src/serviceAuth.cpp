@@ -9,6 +9,7 @@ void ServiceAuth::setupService(ServiceCallbacks *pCallbacks)
 {
   pCharAuth1 = getService()->createCharacteristic(
       CHARACTERISTIC_UUID_AUTH_1,
+      BLECharacteristic::PROPERTY_READ |
       BLECharacteristic::PROPERTY_WRITE |
       BLECharacteristic::PROPERTY_NOTIFY
   );
