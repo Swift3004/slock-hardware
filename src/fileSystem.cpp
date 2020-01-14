@@ -17,7 +17,7 @@ std::string FileSystem::readFile(fs::FS &fs, const char *path)
 {
   std::string value = "";
 
-  Serial.printf("Reading file: %s\n", path);
+  //Serial.printf("Reading file: %s\n", path);
   // open file for reading
   File file = fs.open(path);
   if (!file)
