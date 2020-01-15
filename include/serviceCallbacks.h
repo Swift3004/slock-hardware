@@ -30,6 +30,6 @@ public:
   ServiceCallbacks(FileSystem *fileSystem, bool *shouldCheck, LOCKSTATE *state);
   void onWrite(BLECharacteristic *pCharacteristic);
   void onRead(BLECharacteristic *pCharacteristic);
-  bool authenticate(const char* hash);
+  bool authenticate(const char* hash, const char* &calculatedHash);
 };
 #endif 

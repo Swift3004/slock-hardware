@@ -60,8 +60,8 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
     }
 
     actionInt = atoi(action.c_str());
-
-    bool response = authenticate(hash.c_str());
+    const char* calculatedHash = "";
+    bool response = authenticate(hash.c_str(), calculatedHash);
     if (response)
     {
       Serial.println("I see this as an abosulte win!");
@@ -72,7 +72,7 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
     {
       Serial.println(pFileSystem->readFile(SD, "/SECRET_2.txt").c_str());
       Serial.println("These are confusing times!");
-      notification = "401;" + pFileSystem->readFile(SD, "/SECRET_2.txt");
+      notification = "401;" + pFileSystem->readFile(SD, "/SECRET_2.txt") + ";" + calculatedHash;
     }
     char buffer[16];
     sprintf(buffer, notification.c_str());
@@ -85,14 +85,14 @@ void ServiceCallbacks::onRead(BLECharacteristic *pCharacteristic)
 {
 }
 
-bool ServiceCallbacks::authenticate(const char *hash)
+bool ServiceCallbacks::authenticate(const char *hash, const char* &calculatedHash)
 {
   bool response = false;
 
   std::string secret = pFileSystem->readFile(SD, "/SECRET.txt");
   std::string secret_2 = pFileSystem->readFile(SD, "/SECRET_2.txt");
   const char *noncalculatedHash = (secret + ";" + secret_2).c_str();
-  std::string calculatedHash = "";
+  std::string calculateHash = "";
 
   SHA512 sha512;
   size_t size = strlen(noncalculatedHash);
@@ -116,9 +116,9 @@ bool ServiceCallbacks::authenticate(const char *hash)
     itoa(value[count], buffer, 16);
     if (std::string(buffer).length() == 1)
     {
-      calculatedHash += "0";
+      calculateHash += "0";
     }
-    calculatedHash += buffer;
+    calculateHash += buffer;
   }
   Serial.println(base64::encode(value, 64));
   if (strcmp(hash, base64::encode(value, 64).c_str()) == 0)
@@ -128,6 +128,7 @@ bool ServiceCallbacks::authenticate(const char *hash)
   }
   else
   {
+    calculatedHash = calculateHash.c_str();
     response = false;
   }
 
