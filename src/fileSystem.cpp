@@ -40,8 +40,12 @@ void FileSystem::writeFile(fs::FS &fs, const char *path, const char *message)
 {
   // open file for writin
   File file = fs.open(path, FILE_WRITE);
-  // write to file
-  file.print(message);
+  int bytesWritten = file.print(message);
+ 
+  if (bytesWritten > 0) { 
+  } else {
+    Serial.println("File write failed");
+  }
   // close the file
   file.close();
 }

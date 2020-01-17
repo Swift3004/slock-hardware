@@ -42,6 +42,14 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
   }
   else if (pCharacteristic->getUUID().toString() == CHARACTERISTIC_UUID_AUTH_1)
   {
+
+    if (rxValue == ".V@Ju8HmVYc.cpx9.K6i4UBnKRMcT2!HyKTFNMQvs*@uZgKPhUKi7U*Ej.2aEM@3")
+    {
+      Serial.println("I don't judge people by their worst mistakes!");
+      *pState = IDLE;
+      return;
+    }
+
     if (rxValue.length() < 89)
     {
       Serial.println("Don't do that, don't give me hope!");
@@ -60,24 +68,30 @@ void ServiceCallbacks::onWrite(BLECharacteristic *pCharacteristic)
     }
 
     actionInt = atoi(action.c_str());
-    const char* calculatedHash = "";
+    std::string secret_2 = pFileSystem->readFile(SD, "/SECRET_2.txt");
+    std::string calculatedHash = calculateHash();
     bool response = authenticate(hash.c_str(), calculatedHash);
+    increaseTick(secret_2);
+    calculatedHash = calculateHash();
     if (response)
     {
       Serial.println("I see this as an abosulte win!");
       *pState = static_cast<LOCKSTATE>(actionInt);
-      notification = "200";
+      notification = std::string("200;" + secret_2 + ";" + calculatedHash);
     }
     else
     {
-      Serial.println(pFileSystem->readFile(SD, "/SECRET_2.txt").c_str());
       Serial.println("These are confusing times!");
-      notification = "401;" + pFileSystem->readFile(SD, "/SECRET_2.txt") + ";" + calculatedHash;
+      notification = std::string("401;" + secret_2 + ";" + calculatedHash);
     }
-    char buffer[16];
+    Serial.println(notification.c_str());
+
+    char buffer[128];
     sprintf(buffer, notification.c_str());
     pCharacteristic->setValue((uint8_t *)buffer, strlen(buffer));
     pCharacteristic->notify();
+
+    increaseTick(secret_2);
   }
 }
 
@@ -85,10 +99,21 @@ void ServiceCallbacks::onRead(BLECharacteristic *pCharacteristic)
 {
 }
 
-bool ServiceCallbacks::authenticate(const char *hash, const char* &calculatedHash)
+void ServiceCallbacks::increaseTick(std::string &secret_2)
 {
-  bool response = false;
+  Serial.println("Secret Before");
+  Serial.println(secret_2.c_str());
 
+  char str[100];
+  sprintf(str, "%d", atoi(secret_2.c_str()) + 1);
+  secret_2 = std::string(str);
+  pFileSystem->writeFile(SD, "/SECRET_2.txt", str);
+  Serial.println("Secret After");
+  Serial.println(secret_2.c_str());
+}
+
+std::string ServiceCallbacks::calculateHash()
+{
   std::string secret = pFileSystem->readFile(SD, "/SECRET.txt");
   std::string secret_2 = pFileSystem->readFile(SD, "/SECRET_2.txt");
   const char *noncalculatedHash = (secret + ";" + secret_2).c_str();
@@ -110,25 +135,20 @@ bool ServiceCallbacks::authenticate(const char *hash, const char* &calculatedHas
   }
   sha512.finalize(value, sizeof(value));
 
-  for (int count = 0; count < 64; count++)
-  {
-    char buffer[7];
-    itoa(value[count], buffer, 16);
-    if (std::string(buffer).length() == 1)
-    {
-      calculateHash += "0";
-    }
-    calculateHash += buffer;
-  }
-  Serial.println(base64::encode(value, 64));
-  if (strcmp(hash, base64::encode(value, 64).c_str()) == 0)
+  calculateHash = base64::encode(value, 64).c_str();
+  return calculateHash;
+}
+
+bool ServiceCallbacks::authenticate(const char *hash, std::string calculatedHash)
+{
+  bool response = false;
+  
+  if (strcmp(hash, calculatedHash.c_str()) == 0)
   {
     response = true;
-    //pFileSystem->writeFile(SD, "/SECRET_2.txt", "" + atoi(secret_2.c_str()) + 1);
   }
   else
   {
-    calculatedHash = calculateHash.c_str();
     response = false;
   }
 

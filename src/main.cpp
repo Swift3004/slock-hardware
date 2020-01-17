@@ -21,10 +21,10 @@ LOCKSTATE *state = new LOCKSTATE(IDLE);
 
 ESP32Encoder encoder;
 Servo servo;
-
 TaskHandle_t Task1;
-
+bool run = false;
 int clickCount = 0;
+std::string savedClickCount;
 
 bool checkRegister()
 {
@@ -67,12 +67,16 @@ void restart()
 
   server->checkState(registered);
 }
-uint32_t value = 0;
+
 void TaskLoop(void *parameter)
 {
   for (;;)
   {
-    delay(5000);
+    char str[100];
+    sprintf(str, "%d", clickCount);
+    Serial.println(str);
+    filesystem->writeFile(SD, "/position.txt", str);
+    delay(1000);
   }
 }
 
@@ -85,12 +89,16 @@ void setup()
   encoder.attachHalfQuad(21, 32);
 
   filesystem = new FileSystem();
-
-  if (filesystem->readFile(SD, "/position.txt") == "")
+  Serial.println(filesystem->readFile(SD, "/position.txt").c_str());
+  savedClickCount = filesystem->readFile(SD, "/position.txt");
+  if (savedClickCount.size() == 0)
   {
+    Serial.println("Fuck");
     filesystem->writeFile(SD, "/position.txt", "0");
   }
 
+  run = true;
+  encoder.setCount(atoi(savedClickCount.c_str()));
   checkRegister();
 
   Serial.print("Registered is: ");
@@ -98,14 +106,14 @@ void setup()
 
   restart();
 
-  // xTaskCreatePinnedToCore(
-  //     TaskLoop, /* Function to implement the task */
-  //     "Task1",   /* Name of the task */
-  //     10000,     /* Stack size in words */
-  //     NULL,      /* Task input parameter */
-  //     0,         /* Priority of the task */
-  //     &Task1,    /* Task handle. */
-  //     0);        /* Core where the task should run */
+  xTaskCreatePinnedToCore(
+      TaskLoop, /* Function to implement the task */
+      "Task1",  /* Name of the task */
+      10000,    /* Stack size in words */
+      NULL,     /* Task input parameter */
+      0,        /* Priority of the task */
+      &Task1,   /* Task handle. */
+      0);       /* Core where the task should run */
 }
 
 void attachServo()
@@ -118,46 +126,61 @@ void attachServo()
 
 void loop()
 {
-  int savedClickCount = atoi(filesystem->readFile(SD, "/position.txt").c_str());
-  if (encoder.getCount() != savedClickCount)
+  while (!run)
   {
-    clickCount = encoder.getCount() + savedClickCount;
-  } else {
-    clickCount = encoder.getCount();
   }
+  clickCount = encoder.getCount();
+
   switch (*state)
   {
   case IDLE:
     servo.detach();
+    //Serial.println(clickCount);
     break;
   case OPEN:
     attachServo();
-    if (clickCount >= 5)
+    if (clickCount >= 10)
     {
-      *state = IDLE;
+      servo.detach();
+      *state = ZERO;
+      delay(5000);
     }
     else
     {
       servo.write(1700);
+      delay(20);
     }
 
     break;
   case CLOSE:
     attachServo();
-    if (clickCount <= -40)
+    if (clickCount <= -39)
+    {
+      *state = IDLE;
+    }
+    else
+    {
+      // Serial.println(clickCount);
+      servo.write(1300);
+      delay(20);
+    }
+    break;
+  case ZERO:
+    attachServo();
+    if (clickCount <= 1)
     {
       *state = IDLE;
     }
     else
     {
       servo.write(1300);
+      delay(20);
     }
     break;
   default:
     break;
   }
-  filesystem->writeFile(SD, "/position.txt", "" + clickCount);
-  delay(20);
+
   if (*shouldCheck == true)
   {
     Serial.println("ShouldCheck is true");
