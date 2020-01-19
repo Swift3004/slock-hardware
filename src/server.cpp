@@ -24,6 +24,13 @@ void BluetoothServer::start()
 void BluetoothServer::setup()
 {
   pServer->setCallbacks(new ServerCallbacks());
+
+  BLESecurity *pSecurity = new BLESecurity();
+  pSecurity->setAuthenticationMode(ESP_LE_AUTH_REQ_SC_MITM);
+  pSecurity->setCapability(ESP_IO_CAP_OUT);
+  pSecurity->setInitEncryptionKey(ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK);
+  pSecurity->setRespEncryptionKey(ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK);
+
   setupService();
 }
 
@@ -76,7 +83,6 @@ void BluetoothServer::manageService(SERVICE service, ACTION action)
   {
     pServer->removeService(serviceBLE);
   }
-  
 }
 
 void BluetoothServer::checkState(bool registered)
